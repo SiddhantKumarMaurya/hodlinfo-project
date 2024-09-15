@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hodlinfo</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>Hodlinfo</h1>
+    <button onclick="fetchTickers()">Fetch Latest Tickers</button>
+    <div id="tickers-container">
+      <!-- Table headings -->
+      <div class="table-heading">
+          <span>#</span>
+          <span>Name</span>
+          <span>Last</span>
+          <span>Buy/Sell</span>
+          <span>Volume</span>
+          <span>Base Unit</span>
+      </div>
+    </div>
+
+    <script>
+        async function fetchTickers() {
+            const response = await fetch('/fetch-tickers');
+            if (response.ok) {
+                loadTickers();
+            } else {
+                console.error('Failed to fetch tickers');
+            }
+        }
+
+        async function loadTickers() {
+            const response = await fetch('/get-tickers');
+            const tickers = await response.json();
+            
+            const container = document.getElementById('tickers-container');
+            container.innerHTML = ''; // Clear previous data
+
+            // Add headings again after clearing
+            const headingElement = document.createElement('div');
+            headingElement.className = "table-heading";
+            headingElement.innerHTML = `
+                <span>#</span>
+                <span>Name</span>
+                <span>Last</span>
+                <span>Buy/Sell</span>
+                <span>Volume</span>
+                <span>Base Unit</span>
+            `;
+            container.appendChild(headingElement);
+
+            tickers.forEach((ticker, index) => {
+                const tickerElement = document.createElement('div');
+                tickerElement.className = "ticker-row";
+                tickerElement.innerHTML = `
+                    <span>${index + 1}</span>
+                    <span>${ticker.name}</span>
+                    <span>₹${ticker.last}</span>
+                    <span>₹${ticker.buy}/₹${ticker.sell}</span>
+                    <span>${ticker.volume}</span>
+                    <span>${ticker.base_unit}</span>
+                `;
+                container.appendChild(tickerElement);
+            });
+        }
+    </script>
+</body>
+</html>
